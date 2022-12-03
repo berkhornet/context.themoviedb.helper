@@ -26,7 +26,8 @@
                 </item>
                 <item library="context.py" args="manage_artwork">
                     <label>$ADDON[plugin.video.themoviedb.helper 32222]</label>
-                    <visible>[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]</visible>
+					<!-- PVR018 - Window.IsVisible(MyPVRGuide.xml) added -->
+                    <visible>[Window.IsVisible(MyPVRGuide.xml) | String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]</visible>
                 </item>
                 <item library="context.py" args="add_to_library">
                     <label>$ADDON[plugin.video.themoviedb.helper 32151]</label>

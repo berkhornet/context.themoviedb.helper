@@ -1,5 +1,7 @@
 import sys
 import xbmc
+# PVR018 - IMPORT xbmcgui
+import xbmcgui
 from lib.plugin import viewitems, try_encode, try_decode
 
 
@@ -92,7 +94,21 @@ def run_script(*args, **kwargs):
 
 
 def run_context(info):
-    dbtype = sys.listitem.getVideoInfoTag().getMediaType()
+    #PVR018 - START manual select   
+    window = xbmcgui.getCurrentWindowId()
+    if window != 10702:   
+        dbtype = sys.listitem.getVideoInfoTag().getMediaType()
+    else:        
+        yesbtn = 'Movie'
+        nobtn = 'TV Show'
+        header = 'Is the selected PVR Title a Movie or TV Show ?'  
+        if xbmcgui.Dialog().yesno(header, header, yeslabel=yesbtn, nolabel=nobtn):
+            dbtype = 'movie'
+        else:
+            dbtype = 'tvshow'
+    # PVR018 - END manual select    
+    
+    
     params = {k: v() if callable(v) else v for k, v in viewitems(ROUTE.get(info, {}).get(dbtype, {}))}
     if not params:
         return
