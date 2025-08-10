@@ -1,6 +1,11 @@
 import sys
 import xbmc
+
+# PVR018 - IMPORT xbmcgui
+import xbmcgui
+
 from functools import cached_property
+
 
 
 class ContextMenu:
@@ -152,16 +157,29 @@ ROUTES = {
 
 
 def run_context(info):
-
-    try:
-        mediatype = sys.listitem.getVideoInfoTag().getMediaType()
-        if mediatype not in ROUTES[info]['permission']:
-            raise ValueError(f'Route does not permit {mediatype} mediatype key')
-        class_object = getattr(sys.modules[__name__], f"{ROUTES[info]['base_class']}{mediatype.capitalize()}")
-    except KeyError:
-        class_object = ContextMenu
-    except ValueError:
-        return
+    #PVR018 - get window id   
+    window = xbmcgui.getCurrentWindowId()
+    #PVR018 - normal processing
+    if window != 10702:
+        try:
+            mediatype = sys.listitem.getVideoInfoTag().getMediaType()
+            if mediatype not in ROUTES[info]['permission']:
+                raise ValueError(f'Route does not permit {mediatype} mediatype key')
+            class_object = getattr(sys.modules[__name__], f"{ROUTES[info]['base_class']}{mediatype.capitalize()}")
+        except KeyError:
+            class_object = ContextMenu
+        except ValueError:
+            return
+    #PVR018 - EPG processing
+    else:        
+        yesbtn = 'Movie'
+        nobtn = 'TV Show'
+        header = 'Is the selected PVR Title a Movie or TV Show ?'  
+        if xbmcgui.Dialog().yesno(header, header, yeslabel=yesbtn, nolabel=nobtn):
+            mediatype = 'movie'
+        else:
+            mediatype = 'tvshow'
+    # PVR018 - END manual select
 
     instance = class_object(info)
     instance.executebuiltin()
